@@ -1,5 +1,5 @@
-from chatbot import run_chatbot
+from graph_builder import run_chatbot, run_tool_calling_llm
 
 if __name__ == "__main__":
-    from config import load_config
-    run_chatbot()
+    # run_chatbot()
+    run_tool_calling_llm()

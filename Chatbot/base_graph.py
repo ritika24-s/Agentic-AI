@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from langgraph.prebuilt import ToolNode, tools_condition
 from IPython.display import Image, display
 from state import State
 
@@ -23,6 +24,9 @@ class ChatbotGraphBuilder:
     def add_end_edge(self, node_name:str)-> None:
         self.graph_builder.add_edge(node_name, END)
 
+    def add_condition(self, node_name:str, tool_condition)-> None:
+        self.graph_builder.add_conditional_edges(node_name, tool_condition)
+
     def compile_graph(self):
         self.graph = self.graph_builder.compile()
         return self.graph
@@ -36,3 +40,15 @@ class ChatbotGraphBuilder:
         
     def run_graph(self, data: dict):
         return self.graph.invoke(data)
+
+    def get_result(self, result: dict=None, data: dict=None)-> None:
+        if not result and not data:
+            raise ValueError("No result or data provided")
+        if not result and data:
+            result = self.run_graph(data)
+        
+        for m in result['messages']:
+            m.pretty_print()
+        
+        return result
+        

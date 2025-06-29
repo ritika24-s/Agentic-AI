@@ -1,6 +1,7 @@
 langchain
 langchain-groq
 langchain-openai
+langchain_tavily
 langgraph
 langsmith
 ipykernel
