@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode, tools_condition
 from IPython.display import Image, display
 from state import State
@@ -7,9 +8,13 @@ class ChatbotGraphBuilder:
     """
     This class is used to build the chatbot graph.
     """
-    def __init__(self):
+    def __init__(self, memory: bool=False):
         self.state = State()
         self.graph_builder = StateGraph(State)
+        if memory:
+            self.memory = MemorySaver()
+        else:
+            self.memory = None
         self.graph = None
     
     def add_node(self, node_name:str, node)-> None:
@@ -28,7 +33,7 @@ class ChatbotGraphBuilder:
         self.graph_builder.add_conditional_edges(node_name, tool_condition)
 
     def compile_graph(self):
-        self.graph = self.graph_builder.compile()
+        self.graph = self.graph_builder.compile(checkpointer=self.memory)
         return self.graph
 
     def visualize_graph(self):
@@ -38,14 +43,14 @@ class ChatbotGraphBuilder:
             print(f"Error visualizing graph: {e}")
             return None
         
-    def run_graph(self, data: dict):
-        return self.graph.invoke(data)
+    def run_graph(self, data: dict, config: dict=None):
+        return self.graph.invoke(data, config=config)
 
-    def get_result(self, result: dict=None, data: dict=None)-> None:
+    def get_result(self, result: dict=None, data: dict=None, config: dict=None)-> None:
         if not result and not data:
             raise ValueError("No result or data provided")
         if not result and data:
-            result = self.run_graph(data)
+            result = self.run_graph(data, config=config)
         
         for m in result['messages']:
             m.pretty_print()

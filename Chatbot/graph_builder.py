@@ -44,7 +44,6 @@ def run_tool_calling_llm():
 
 
 def react_agent_architecture():
-    def run_tool_calling_llm():
     tools = get_tools()
 
     # Graph builder
@@ -68,3 +67,17 @@ def react_agent_architecture():
     graph_builder.visualize_graph()
     data = {"messages":"what is 5 multiplied by 2?"}
     result = graph_builder.get_result(data=data)
+
+
+def agent_with_memory():
+    graph_builder = ChatbotGraphBuilder(memory=True)
+    graph_builder.add_node("llm_chatbot", chatbot_node)
+    graph_builder.add_start_edge("llm_chatbot")
+
+    graph_builder.add_end_edge("llm_chatbot")
+
+    graph = graph_builder.compile_graph()
+    graph_builder.visualize_graph()
+    config={"configurable":{"thread_id":"1"}}
+    result = graph_builder.get_result(data={"messages":"Hi my name is Ritika "}, config=config)
+    print(result)
